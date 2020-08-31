@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Manage Assignee</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <form class="inputDataForm" id="form">
+        <div class="layer">
+            <div class="model">
+                <div class="star-with-top-space">
+                    <label for="Task" class="task">Task</label>
+                    <input type="text" class="inputText" placeholder="Placeholder" id="taskValue">
+                </div>
+                <div>
+                    <label for="Assignee" class="Assignee">Assignee</label>
+                    <input type="text" class="inputText" placeholder="Placeholder" id="assigneeValue">
+
+                    <input type="button" class="btn--add" value="add" name="add" id="add">
+                </div>
+                <hr class="drowLine" />
+                <div class="txt-search-by-name" id="divSearch">
+                    <span class="fa fa-search form-control-feedback  search-icone"></span>
+                    <input type="text" name="searchText" id="searchText" class="search" placeholder=" Search" />
+
+                    <i class="fa exit-icon" onclick="removeSearchText()">&#xf00d;</i>
+                </div>
+
+                <div id="content"></div>
+                <div id="footer-div">
+                    <div>
+                        <label for="toDo">ToDo:</label>
+                        <input type="text" name="toDo" id="toDo" class="footer_txt">
+                    </div>
+                    <div>
+                        <label for="done">Done:</label>
+                        <input type="text" name="done" id="done" class="footer_txt">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <script>
+        const tasks = [];
+
+        function removeSearchText() {
+            document.getElementById("searchText").value = " ";
+        }
+
+        $(document).ready(function() {
+            $("#add").click(function() {
+                taskValue = document.getElementById('taskValue').value;
+                assigneeValue = document.getElementById('assigneeValue').value;
+                const task = {
+                    task: taskValue,
+                    assignee: assigneeValue,
+                    isDone: false
+                };
+                tasks.push(task);
+                printDivesToScreen(tasks);
+            });
+        });
+
+        function printDivesToScreen(tasks) {
+
+            clearBox('content');
+            for (let i = 0; i < tasks.length; i++) {
+                if (tasks[i].task == " " || tasks[i].assignee == " ") {
+                    alert("fill both task and assignee values ....")
+                }
+                const id = Math.ceil(Math.random() * 100);
+                const div = '<div id="' + id + '" class="add-new-Task"><div class="task-row"><label for="Task" class="task_added">' + tasks[i].task + '</label><i class="fas fa-trash delete-icone"id="delete" onclick="removeTask(' + id + ')"></i></div><div  class="assignee-row"><label for="Assignee" class="assignee_added" id="' + id + '_label" onclick="toggleAssignee(' + i + ')" >' + tasks[i].assignee + '</label><i class="fa fa-check-circle check-icone " ></i></div></div>';
+                $("#content").append(div);
+                document.getElementById('taskValue').value = " ";
+                document.getElementById('assigneeValue').value = " ";
+                document.getElementById("done").value = 0;
+                document.getElementById("toDo").value = i + 1;
+                document.getElementById(id + '_label').addEventListener("click", assigneeClick);
+
+            }
+        }
+
+        function removeTask(id) {
+            const confirmMessage = confirm("Are you sure you want to delete?");
+            if (confirmMessage && id) {
+                document.getElementById(id).remove();
+            }
+        }
+
+        document.getElementById("searchText").addEventListener("keyup", function(evt) {
+
+            search(evt.target.value);
+
+        });
+
+        function search(taskName) {
+            const resultArray = tasks.filter(a => a.task.includes(taskName));
+            printDivesToScreen(resultArray);
+        }
+
+        function clearBox(elementID) {
+            const div = document.getElementById(elementID);
+            while (div.firstChild) {
+                div.removeChild(div.firstChild);
+            }
+        }
+
+        function toggleAssignee(index) {
+            const task = tasks[index];
+            task.isDone = !task.isDone;
+            let resultArray = tasks.filter(a => a.isDone);
+            document.getElementById("done").value = resultArray.length;
+            document.getElementById("toDo").value = tasks.length - resultArray.length;
+
+        }
+
+        function assigneeClick() {
+            return this.classList.toggle("done");
+        }
+    </script>
+</body>
+
+</html>
